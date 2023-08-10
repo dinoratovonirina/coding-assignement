@@ -14,7 +14,7 @@ const routes: Routes = [
     component: ListTicketComponent,
   },
   {
-    path: "detail-ticket",
+    path: "detail-ticket/:id",
     component: DetailTicketComponent,
   },
 ];

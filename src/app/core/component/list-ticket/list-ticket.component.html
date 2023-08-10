@@ -1,10 +1,12 @@
 <app-add-ticket></app-add-ticket>
 
 <app-filter-ticket (textForFilter)="onFilterTicket($event)"></app-filter-ticket>
-{{ tickets$ | async | json }}
+
 <ul>
-  <li *ngFor="let ticket of tickets$ | async">
+  <li *ngFor="let ticket of ticketFilter | async">
     Ticket: {{ ticket.id }}, {{ ticket.description }} ,
-    <button (click)="onViewDetail(ticket.id)">détail</button>
+    <button (click)="onViewDetail(['/detail-ticket', ticket.id])">
+      détail
+    </button>
   </li>
 </ul>
