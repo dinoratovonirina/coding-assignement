@@ -16,6 +16,7 @@ export class DetailTicketComponent implements OnInit {
   public readonly users$: Observable<User[]> = this.backendService.users();
   public selectUserForAssign: number = null;
   private _id: number = +this.route.snapshot.params["id"];
+  public spinnerShow: boolean = false;
 
   constructor(
     private readonly backendService: BackendService,
@@ -61,9 +62,13 @@ export class DetailTicketComponent implements OnInit {
   }
 
   onComplete() {
+    this.spinnerShow = true;
     this.backendService
       .complete(this._id, true)
-      .pipe(tap(() => this.onInitDetail()))
+      .pipe(
+        tap(() => this.onInitDetail()),
+        tap(() => (this.spinnerShow = false))
+      )
       .subscribe();
   }
 

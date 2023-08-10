@@ -1,5 +1,5 @@
 import { BrowserModule } from "@angular/platform-browser";
-import { NgModule } from "@angular/core";
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
 import { AppComponent } from "./app.component";
 import { BackendService } from "./backend.service";
 import { FormsModule } from "@angular/forms";
@@ -21,5 +21,6 @@ import { DetailTicketResolver } from "src/Resolvers/detail-ticket.resolver";
   imports: [BrowserModule, FormsModule, AppRoutingModule],
   providers: [BackendService, DetailTicketResolver],
   bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {}

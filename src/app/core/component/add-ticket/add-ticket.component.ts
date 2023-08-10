@@ -10,7 +10,7 @@ import { BackendService } from "src/app/backend.service";
 })
 export class AddTicketComponent implements OnInit {
   private _description: string = "";
-
+  public spinnerShow: boolean = false;
   private souscription = new Subscription();
 
   constructor(private readonly backendService: BackendService) {}
@@ -26,10 +26,14 @@ export class AddTicketComponent implements OnInit {
   }
 
   onAddTicket() {
+    this.spinnerShow = true;
     this.souscription.add(
       this.backendService
         .newTicket({ description: this.description })
-        .pipe(tap(() => this.onResetForm()))
+        .pipe(
+          tap(() => this.onResetForm()),
+          tap(() => (this.spinnerShow = false))
+        )
         .subscribe()
     );
   }
