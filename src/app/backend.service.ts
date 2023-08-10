@@ -25,12 +25,16 @@ export class BackendService {
     {
       id: 1,
       completed: false,
-      assigneeId: 111,
+      assigneeId: 112,
       description: "Move the desk to the new location",
     },
   ];
 
-  public storedUsers: User[] = [{ id: 111, name: "Victor" }];
+  public storedUsers: User[] = [
+    { id: 111, name: "Victor" },
+    { id: 112, name: "Le Perce" },
+    { id: 113, name: "Dino" },
+  ];
 
   private lastId: number = 1;
 

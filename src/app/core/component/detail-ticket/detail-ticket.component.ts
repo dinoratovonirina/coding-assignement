@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Observable, combineLatest, of } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { BackendService } from "src/app/backend.service";
 import { Ticket } from "src/interfaces/ticket.interface";
 import { User } from "src/interfaces/user.interface";
@@ -14,6 +14,8 @@ import { User } from "src/interfaces/user.interface";
 export class DetailTicketComponent implements OnInit {
   dataDetailTicket$: Observable<Ticket> = of();
   public readonly users$: Observable<User[]> = this.backendService.users();
+  public selectUserForAssign: number = null;
+  id: number = +this.route.snapshot.params["id"];
 
   constructor(
     private readonly backendService: BackendService,
@@ -28,9 +30,12 @@ export class DetailTicketComponent implements OnInit {
           map(([detailTicket, users]) => {
             return {
               ...detailTicket,
-              assigneeName: users.find(
-                (assigned) => assigned.id === detailTicket.assigneeId
-              ).name,
+              assigneeName:
+                detailTicket.assigneeId === null
+                  ? ""
+                  : users.find(
+                      (assigned) => assigned.id === detailTicket.assigneeId
+                    ).name,
             };
           })
         )
@@ -38,6 +43,16 @@ export class DetailTicketComponent implements OnInit {
           this.dataDetailTicket$ = of<Ticket>(data);
         });
     });
+  }
+
+  onSelectUserForAssign() {
+    if (this.selectUserForAssign) {
+      if (confirm("voulez-vous assigner ce ticket à cette personne?")) {
+        this.backendService
+          .assign(this.id, this.selectUserForAssign)
+          .subscribe();
+      }
+    }
   }
 
   onPrecede() {
