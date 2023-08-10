@@ -1,1 +1,6 @@
-<p>detail-ticket works!</p>
+<div *ngIf="dataDetailTicket$ | async as dataDetail">
+  <h3>Détail du Ticket n° : {{ dataDetail.id }}</h3>
+  <p>Déscription : {{ dataDetail.description }}</p>
+  <p>Assigner à : {{ dataDetail.assigneeId }}</p>
+  <p>Complète : {{ dataDetail.completed }}</p>
+</div>

@@ -52,7 +52,6 @@ export class ListTicketComponent implements OnInit {
   }
 
   onViewDetail(arg: any) {
-    console.log(arg);
-    this.router.navigateByUrl("/detail-ticket/" + arg);
+    this.router.navigate(arg);
   }
 }

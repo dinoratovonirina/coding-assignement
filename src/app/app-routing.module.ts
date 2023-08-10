@@ -2,10 +2,11 @@ import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { DetailTicketComponent } from "./core/component/detail-ticket/detail-ticket.component";
 import { ListTicketComponent } from "./core/component/list-ticket/list-ticket.component";
+import { DetailTicketResolver } from "src/Resolvers/detail-ticket.resolver";
 
 const routes: Routes = [
   {
-    path: "**",
+    path: "",
     redirectTo: "list-ticket",
     pathMatch: "full",
   },
@@ -16,6 +17,7 @@ const routes: Routes = [
   {
     path: "detail-ticket/:id",
     component: DetailTicketComponent,
+    resolve: { detailTicket: DetailTicketResolver },
   },
 ];
 

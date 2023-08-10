@@ -5,7 +5,9 @@
 <ul>
   <li *ngFor="let ticket of ticketFilter | async">
     Ticket: {{ ticket.id }}, {{ ticket.description }} ,
-    <button (click)="onViewDetail(['/detail-ticket', ticket.id])">
+    <button
+      type="button"
+      (click)="onViewDetail(['/detail-ticket/', ticket.id])">
       détail
     </button>
   </li>

@@ -8,6 +8,7 @@ import { FilterTicketComponent } from "./core/component/filter-ticket/filter-tic
 import { DetailTicketComponent } from "./core/component/detail-ticket/detail-ticket.component";
 import { ListTicketComponent } from "./core/component/list-ticket/list-ticket.component";
 import { AppRoutingModule } from "./app-routing.module";
+import { DetailTicketResolver } from "src/Resolvers/detail-ticket.resolver";
 
 @NgModule({
   declarations: [
@@ -18,7 +19,7 @@ import { AppRoutingModule } from "./app-routing.module";
     ListTicketComponent,
   ],
   imports: [BrowserModule, FormsModule, AppRoutingModule],
-  providers: [BackendService],
+  providers: [BackendService, DetailTicketResolver],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
