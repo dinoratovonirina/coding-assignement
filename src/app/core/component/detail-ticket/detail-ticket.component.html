@@ -3,16 +3,16 @@
   <p>Déscription : {{ dataDetail.description }}</p>
 
   <div *ngIf="dataDetail.assigneeId">
-    <p>Assigner à : {{ dataDetail.assigneeName }}</p>
+    <p>attribuer à : {{ dataDetail.assigneeName }}</p>
   </div>
 
   <div *ngIf="!dataDetail.assigneeId">
     <p>
-      Assigner à :
+      attribuer à :
       <select
         name="selectUserForAssign"
-        [(ngModel)]="selectUserForAssign"
-        (change)="onSelectUserForAssign()">
+        (change)="onSelectUserForAssign()"
+        [(ngModel)]="selectUserForAssign">
         <option selected [value]=""></option>
         <option *ngFor="let user of users$ | async" [value]="user.id">
           {{ user.name }}
@@ -24,3 +24,4 @@
   <p>Complète : {{ dataDetail.completed }}</p>
 </div>
 <button type="button" (click)="onPrecede()">Prècedent</button>
+<button type="button" (click)="onComplete()">compléter</button>

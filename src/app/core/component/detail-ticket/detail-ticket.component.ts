@@ -12,10 +12,10 @@ import { User } from "src/interfaces/user.interface";
   styleUrls: ["./detail-ticket.component.css"],
 })
 export class DetailTicketComponent implements OnInit {
-  dataDetailTicket$: Observable<Ticket> = of();
+  public dataDetailTicket$: Observable<Ticket> = of();
   public readonly users$: Observable<User[]> = this.backendService.users();
   public selectUserForAssign: number = null;
-  id: number = +this.route.snapshot.params["id"];
+  private _id: number = +this.route.snapshot.params["id"];
 
   constructor(
     private readonly backendService: BackendService,
@@ -24,6 +24,10 @@ export class DetailTicketComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.onInitDetail();
+  }
+
+  onInitDetail() {
     this.route.data.subscribe((data) => {
       combineLatest([of<Ticket>(data.detailTicket), this.users$])
         .pipe(
@@ -49,10 +53,18 @@ export class DetailTicketComponent implements OnInit {
     if (this.selectUserForAssign) {
       if (confirm("voulez-vous assigner ce ticket à cette personne?")) {
         this.backendService
-          .assign(this.id, this.selectUserForAssign)
+          .assign(this._id, this.selectUserForAssign)
+          .pipe(tap(() => this.onInitDetail()))
           .subscribe();
       }
     }
+  }
+
+  onComplete() {
+    this.backendService
+      .complete(this._id, true)
+      .pipe(tap(() => this.onInitDetail()))
+      .subscribe();
   }
 
   onPrecede() {
