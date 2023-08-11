@@ -21,7 +21,7 @@ import { TicketService } from "./Services/ticket.service";
     ListTicketComponent,
   ],
   imports: [BrowserModule, FormsModule, AppRoutingModule],
-  providers: [BackendService, DetailTicketResolver, UserService, TicketService],
+  providers: [UserService, TicketService, BackendService, DetailTicketResolver],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

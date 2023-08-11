@@ -2,7 +2,6 @@ import { Component, OnInit } from "@angular/core";
 
 import { Router } from "@angular/router";
 import { BehaviorSubject, Observable, combineLatest, of } from "rxjs";
-import { map } from "rxjs/operators";
 import { TicketService } from "src/app/Services/ticket.service";
 import { Ticket } from "src/interfaces/ticket.interface";
 
@@ -12,24 +11,34 @@ import { Ticket } from "src/interfaces/ticket.interface";
   styleUrls: ["./list-ticket.component.css"],
 })
 export class ListTicketComponent implements OnInit {
-  public listFilterTicket: Observable<Ticket[]> = new Observable<Ticket[]>();
+  public listFilterTicket: BehaviorSubject<Ticket[]> = new BehaviorSubject<
+    Ticket[]
+  >([]);
 
   constructor(public ticketService: TicketService, private router: Router) {}
 
   ngOnInit(): void {
-    this.getInitFilter();
+    this.emitInitFilter();
   }
 
-  getInitFilter() {
-    this.listFilterTicket = this.ticketService.listTicket;
+  emitInitFilter() {
+    this.ticketService.listTicket.subscribe((listTicket: Ticket[]) =>
+      this.setListFilterTicket(listTicket)
+    );
+  }
+
+  setListFilterTicket(arg: Ticket[]) {
+    this.listFilterTicket.next(arg);
   }
 
   onFilterTicket(arg: number) {
-    if (arg === null) return this.getInitFilter();
+    if (arg === null) return this.emitInitFilter();
     else
-      this.listFilterTicket = this.listFilterTicketObservable(
+      this.listFilterTicketObservable(
         this.ticketService.listTicket,
         of(arg)
+      ).subscribe((listTicket: Ticket[]) =>
+        this.setListFilterTicket(listTicket)
       );
   }
 

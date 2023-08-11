@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Observable, Subscription } from "rxjs";
-import { tap } from "rxjs/operators";
+import { Subscription } from "rxjs";
+import { switchMap, tap } from "rxjs/operators";
+import { TicketService } from "src/app/Services/ticket.service";
 import { BackendService } from "src/app/backend.service";
 
 @Component({
@@ -13,7 +14,10 @@ export class AddTicketComponent implements OnInit, OnDestroy {
   public spinnerShow: boolean = false;
   private souscription = new Subscription();
 
-  constructor(private readonly backendService: BackendService) {}
+  constructor(
+    private readonly backendService: BackendService,
+    private ticketService: TicketService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -31,6 +35,7 @@ export class AddTicketComponent implements OnInit, OnDestroy {
       this.backendService
         .newTicket({ description: this.description })
         .pipe(
+          switchMap(() => this.ticketService.listTicket),
           tap(() => this.onResetForm()),
           tap(() => (this.spinnerShow = false))
         )
