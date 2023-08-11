@@ -9,6 +9,8 @@ import { DetailTicketComponent } from "./core/component/detail-ticket/detail-tic
 import { ListTicketComponent } from "./core/component/list-ticket/list-ticket.component";
 import { AppRoutingModule } from "./app-routing.module";
 import { DetailTicketResolver } from "src/Resolvers/detail-ticket.resolver";
+import { UserService } from "./Services/user.service";
+import { TicketService } from "./Services/ticket.service";
 
 @NgModule({
   declarations: [
@@ -19,7 +21,7 @@ import { DetailTicketResolver } from "src/Resolvers/detail-ticket.resolver";
     ListTicketComponent,
   ],
   imports: [BrowserModule, FormsModule, AppRoutingModule],
-  providers: [BackendService, DetailTicketResolver],
+  providers: [BackendService, DetailTicketResolver, UserService, TicketService],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

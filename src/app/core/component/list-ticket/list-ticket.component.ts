@@ -1,10 +1,10 @@
-import { Component, OnInit, Output, EventEmitter } from "@angular/core";
-import { BackendService } from "src/app/backend.service";
-import { Ticket } from "src/interfaces/ticket.interface";
-import { Observable, combineLatest, of, BehaviorSubject } from "rxjs";
+import { Component, OnInit } from "@angular/core";
 
-import { tap, map } from "rxjs/operators";
 import { Router } from "@angular/router";
+import { BehaviorSubject, Observable, combineLatest, of } from "rxjs";
+import { map } from "rxjs/operators";
+import { TicketService } from "src/app/Services/ticket.service";
+import { Ticket } from "src/interfaces/ticket.interface";
 
 @Component({
   selector: "app-list-ticket",
@@ -12,50 +12,37 @@ import { Router } from "@angular/router";
   styleUrls: ["./list-ticket.component.css"],
 })
 export class ListTicketComponent implements OnInit {
-  private _tickets$: Observable<Ticket[]> = of([]);
-  private _ticketsFilter$: Observable<Ticket[]> = of([]);
+  public listFilterTicket: Observable<Ticket[]> = new Observable<Ticket[]>();
 
-  constructor(
-    private readonly backendService: BackendService,
-    private router: Router
-  ) {}
+  constructor(public ticketService: TicketService, private router: Router) {}
 
   ngOnInit(): void {
-    this.getListTicket();
-    this.affectTiketFiltre();
+    this.getInitFilter();
   }
 
-  private getListTicket() {
-    this.tickets = this.backendService.tickets();
-  }
-
-  private affectTiketFiltre() {
-    this.ticketFilter = this.tickets;
-  }
-
-  get tickets(): Observable<Ticket[]> {
-    return this._tickets$;
-  }
-
-  set tickets(arg: Observable<Ticket[]>) {
-    this._tickets$ = arg;
-  }
-
-  get ticketFilter(): Observable<Ticket[]> {
-    return this._ticketsFilter$;
-  }
-
-  set ticketFilter(arg: Observable<Ticket[]>) {
-    this._ticketsFilter$ = arg;
+  getInitFilter() {
+    this.listFilterTicket = this.ticketService.listTicket;
   }
 
   onFilterTicket(arg: number) {
-    if (arg === null) return this.affectTiketFiltre();
+    if (arg === null) return this.getInitFilter();
+    else
+      this.listFilterTicket = this.listFilterTicketObservable(
+        this.ticketService.listTicket,
+        of(arg)
+      );
+  }
 
-    this.ticketFilter = this.tickets.pipe(
-      map((tickets: Ticket[]) => {
-        return tickets.filter((ticket: Ticket) => ticket.id === arg);
-      })
+  private listFilterTicketObservable(
+    listTicket$: Observable<Ticket[]>,
+    filterValue$: Observable<number>
+  ) {
+    return combineLatest(
+      listTicket$,
+      filterValue$,
+      (tiketList: Ticket[], filterValue: number) => {
+        return tiketList.filter((tiket: Ticket) => tiket.id === filterValue);
+      }
     );
   }
 

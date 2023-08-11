@@ -10,7 +10,7 @@ import { User } from "../interfaces/user.interface";
  */
 
 function randomDelay() {
-  return Math.random() * 1000;
+  return Math.random() * 4000;
 }
 
 @Injectable()
