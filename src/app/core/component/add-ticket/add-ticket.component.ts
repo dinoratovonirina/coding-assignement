@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { tap } from "rxjs/operators";
 import { BackendService } from "src/app/backend.service";
@@ -8,7 +8,7 @@ import { BackendService } from "src/app/backend.service";
   templateUrl: "./add-ticket.component.html",
   styleUrls: ["./add-ticket.component.css"],
 })
-export class AddTicketComponent implements OnInit {
+export class AddTicketComponent implements OnInit, OnDestroy {
   private _description: string = "";
   public spinnerShow: boolean = false;
   private souscription = new Subscription();
@@ -40,5 +40,9 @@ export class AddTicketComponent implements OnInit {
 
   onResetForm() {
     this.description = "";
+  }
+
+  ngOnDestroy(): void {
+    this.souscription.unsubscribe();
   }
 }

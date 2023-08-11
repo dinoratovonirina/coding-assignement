@@ -47,7 +47,11 @@
           </button>
         </div>
         <div class="col-1">
-          <button class="btn btn-success" type="button" (click)="onComplete()">
+          <button
+            class="btn btn-success"
+            type="button"
+            [disabled]="!dataDetail.assigneeId"
+            (click)="onComplete()">
             compléter
           </button>
         </div>
