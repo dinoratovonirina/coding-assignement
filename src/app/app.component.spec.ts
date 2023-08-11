@@ -3,6 +3,7 @@ import { AppComponent } from "./app.component";
 
 describe("AppComponent", () => {
   let fixture: ComponentFixture<AppComponent>;
+  let app: AppComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -13,20 +14,16 @@ describe("AppComponent", () => {
   });
 
   it("should create the app", () => {
-    const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'app'`, () => {
-    const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual("app");
+  it(`should have as title 'Ticket'`, () => {
+    expect(app.title).toEqual("Ticket");
   });
 
   it("should render title in a h1 tag", () => {
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector("h1").textContent).toContain(
-      "Welcome to app!"
-    );
+    expect(compiled.querySelector("h1").textContent).toContain("Ticket");
   });
 });

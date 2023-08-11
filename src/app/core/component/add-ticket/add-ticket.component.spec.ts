@@ -1,16 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { AddTicketComponent } from './add-ticket.component';
+import { AddTicketComponent } from "./add-ticket.component";
+import { BackendService } from "src/app/backend.service";
 
-describe('AddTicketComponent', () => {
+describe("AddTicketComponent", () => {
   let component: AddTicketComponent;
   let fixture: ComponentFixture<AddTicketComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AddTicketComponent ]
-    })
-    .compileComponents();
+      declarations: [AddTicketComponent],
+      providers: [BackendService],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -19,7 +20,7 @@ describe('AddTicketComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });
