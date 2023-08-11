@@ -21,7 +21,15 @@ export class ListTicketComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.getListTicket();
+    this.affectTiketFiltre();
+  }
+
+  private getListTicket() {
     this.tickets = this.backendService.tickets();
+  }
+
+  private affectTiketFiltre() {
     this.ticketFilter = this.tickets;
   }
 
@@ -42,7 +50,7 @@ export class ListTicketComponent implements OnInit {
   }
 
   onFilterTicket(arg: number) {
-    if (arg === null) return (this.ticketFilter = this.tickets);
+    if (arg === null) return this.affectTiketFiltre();
 
     this.ticketFilter = this.tickets.pipe(
       map((tickets: Ticket[]) => {
