@@ -1,7 +1,14 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Observable, Subscription, combineLatest, of } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import {
+  BehaviorSubject,
+  Observable,
+  Subscription,
+  combineLatest,
+  of,
+} from "rxjs";
+import { map, switchMap, tap } from "rxjs/operators";
+import { UserService } from "src/app/Services/user.service";
 import { BackendService } from "src/app/backend.service";
 import { Ticket } from "src/interfaces/ticket.interface";
 import { User } from "src/interfaces/user.interface";
@@ -12,9 +19,9 @@ import { User } from "src/interfaces/user.interface";
   styleUrls: ["./detail-ticket.component.css"],
 })
 export class DetailTicketComponent implements OnInit, OnDestroy {
-  public dataDetailTicket$: Observable<Ticket> = of();
-  public readonly users$: Observable<User[]> = this.backendService.users();
+  public dataDetailTicket$: Observable<Ticket> = new Observable<Ticket>();
   public selectUserForAssign: number = null;
+  public listUser$: Observable<User> = of();
   private _id: number = +this.route.snapshot.params["id"];
   public spinnerShow: boolean = false;
   public souscription: Subscription = new Subscription();
@@ -22,7 +29,8 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
   constructor(
     private readonly backendService: BackendService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    public userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -30,25 +38,23 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
   }
 
   onInitDetail() {
-    this.route.data.subscribe((data) => {
-      combineLatest([of<Ticket>(data.detailTicket), this.users$])
-        .pipe(
-          map(([detailTicket, users]) => {
-            return {
-              ...detailTicket,
-              assigneeName:
-                detailTicket.assigneeId === null
-                  ? ""
-                  : users.find(
-                      (assigned) => assigned.id === detailTicket.assigneeId
-                    ).name,
-            };
-          })
-        )
-        .subscribe((data) => {
-          this.dataDetailTicket$ = of<Ticket>(data);
-        });
-    });
+    this.dataDetailTicket$ = combineLatest([
+      this.route.data,
+      this.userService.listUser,
+    ]).pipe(
+      map(([detailTicket, users]) => {
+        return {
+          ...detailTicket.detailTicket,
+          assigneeName:
+            detailTicket.detailTicket.assigneeId === null
+              ? ""
+              : users.find(
+                  (assigned) =>
+                    assigned.id === detailTicket.detailTicket.assigneeId
+                )?.name,
+        } as Ticket;
+      })
+    );
   }
 
   onSelectUserForAssign() {

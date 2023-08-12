@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 
 import { Router } from "@angular/router";
 import { BehaviorSubject, Observable, combineLatest, of } from "rxjs";
+import { tap } from "rxjs/operators";
 import { TicketService } from "src/app/Services/ticket.service";
 import { Ticket } from "src/interfaces/ticket.interface";
 
@@ -11,35 +12,37 @@ import { Ticket } from "src/interfaces/ticket.interface";
   styleUrls: ["./list-ticket.component.css"],
 })
 export class ListTicketComponent implements OnInit {
-  public listFilterTicket: BehaviorSubject<Ticket[]> = new BehaviorSubject<
+  public _listFilterTicket$: BehaviorSubject<Ticket[]> = new BehaviorSubject<
     Ticket[]
   >([]);
 
   constructor(public ticketService: TicketService, private router: Router) {}
 
   ngOnInit(): void {
-    this.emitInitFilter();
+    this.emitFilterTicket();
   }
 
-  emitInitFilter() {
-    this.ticketService.listTicket.subscribe((listTicket: Ticket[]) =>
-      this.setListFilterTicket(listTicket)
-    );
+  get listFilterTicket(): Observable<Ticket[]> {
+    return this._listFilterTicket$.asObservable();
   }
 
   setListFilterTicket(arg: Ticket[]) {
-    this.listFilterTicket.next(arg);
+    this._listFilterTicket$.next(arg);
+  }
+
+  emitFilterTicket() {
+    this.ticketService.listTicket
+      .pipe(tap((listTicket: Ticket[]) => this.setListFilterTicket(listTicket)))
+      .subscribe();
   }
 
   onFilterTicket(arg: number) {
-    if (arg === null) return this.emitInitFilter();
+    if (arg === null) return this.emitFilterTicket();
     else
       this.listFilterTicketObservable(
         this.ticketService.listTicket,
         of(arg)
-      ).subscribe((listTicket: Ticket[]) =>
-        this.setListFilterTicket(listTicket)
-      );
+      ).subscribe();
   }
 
   private listFilterTicketObservable(
@@ -52,7 +55,7 @@ export class ListTicketComponent implements OnInit {
       (tiketList: Ticket[], filterValue: number) => {
         return tiketList.filter((tiket: Ticket) => tiket.id === filterValue);
       }
-    );
+    ).pipe(tap((listTicket) => this.setListFilterTicket(listTicket)));
   }
 
   onViewDetail(arg: any) {
