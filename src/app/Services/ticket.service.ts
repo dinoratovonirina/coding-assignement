@@ -12,10 +12,16 @@ export class TicketService {
     Ticket[]
   >([]);
 
+  private _ticket$: BehaviorSubject<Ticket> = new BehaviorSubject<Ticket>(null);
+
   constructor(private readonly backendService: BackendService) {}
 
   get listTicket(): Observable<Ticket[]> {
     return this._listTicket$.asObservable();
+  }
+
+  get listTicketBehavior() {
+    return this._listTicket$;
   }
 
   setListTicket(arg: Ticket[]) {
@@ -24,6 +30,18 @@ export class TicketService {
 
   getValueListTicket(): Ticket[] {
     return this._listTicket$.value;
+  }
+
+  get ticket() {
+    return this._ticket$.asObservable();
+  }
+
+  setTicket(arg: Ticket | any) {
+    this._ticket$.next(arg);
+  }
+
+  getValueTicket(): Ticket {
+    return this._ticket$.value;
   }
 
   emitListTicket() {

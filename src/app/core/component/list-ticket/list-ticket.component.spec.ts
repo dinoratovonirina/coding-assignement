@@ -3,6 +3,7 @@ import { RouterTestingModule } from "@angular/router/testing";
 
 import { ListTicketComponent } from "./list-ticket.component";
 import { TicketService } from "src/app/Services/ticket.service";
+import { BackendService } from "src/app/backend.service";
 
 describe("ListTicketComponent", () => {
   let component: ListTicketComponent;
@@ -12,7 +13,7 @@ describe("ListTicketComponent", () => {
     TestBed.configureTestingModule({
       declarations: [ListTicketComponent],
       imports: [RouterTestingModule],
-      providers: [TicketService],
+      providers: [TicketService, BackendService],
     });
   });
 

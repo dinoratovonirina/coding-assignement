@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { AppComponent } from "./app.component";
-import { UserService } from "./Services/user.service";
 import { TicketService } from "./Services/ticket.service";
+import { BackendService } from "./backend.service";
 
 describe("AppComponent", () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -10,10 +10,11 @@ describe("AppComponent", () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [AppComponent],
-      providers: [UserService, TicketService],
+      providers: [TicketService, BackendService],
     });
 
     fixture = TestBed.createComponent(AppComponent);
+    app = fixture.componentInstance;
   });
 
   it("should create the app", () => {

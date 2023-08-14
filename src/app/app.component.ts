@@ -8,7 +8,7 @@ import { TicketService } from "./Services/ticket.service";
   styleUrls: ["./app.component.css"],
 })
 export class AppComponent implements OnInit {
-  public title = "Ticket";
+  public title: string = "Ticket";
 
   constructor(
     private userService: UserService,
