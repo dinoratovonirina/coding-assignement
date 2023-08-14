@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Subscription } from "rxjs";
-import { switchMap, tap } from "rxjs/operators";
+import { Subscription, of } from "rxjs";
+import { concatMap, map, switchMap, take, tap } from "rxjs/operators";
 import { TicketService } from "src/app/Services/ticket.service";
 import { BackendService } from "src/app/backend.service";
+import { Ticket } from "src/interfaces/ticket.interface";
 
 @Component({
   selector: "app-add-ticket",
@@ -31,16 +32,33 @@ export class AddTicketComponent implements OnInit, OnDestroy {
 
   onAddTicket() {
     this.spinnerShow = true;
-    this.souscription.add(
-      this.backendService
-        .newTicket({ description: this.description })
-        .pipe(
-          switchMap(() => this.ticketService.listTicket),
-          tap(() => this.onResetForm()),
-          tap(() => (this.spinnerShow = false))
+
+    of(this.description)
+      .pipe(
+        concatMap((description) =>
+          this.ticketService.listTicket.pipe(
+            map((tickets: Ticket[]) => {
+              return [
+                ...tickets,
+                {
+                  id: tickets.length,
+                  completed: false,
+                  assigneeId: null,
+                  description: description,
+                },
+              ];
+            })
+          )
+        ),
+        take(1),
+        tap(() =>
+          this.backendService.newTicket({ description: this.description })
         )
-        .subscribe()
-    );
+      )
+      .subscribe((listeTicket) => {
+        this.ticketService.setListTicket(listeTicket);
+        this.spinnerShow = false;
+      });
   }
 
   onResetForm() {

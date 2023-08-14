@@ -1,9 +1,26 @@
+import { isNull } from "@angular/compiler/src/output/output_ast";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Observable, Subscription, of } from "rxjs";
-import { map, switchMap, tap } from "rxjs/operators";
+import {
+  BehaviorSubject,
+  Observable,
+  Subject,
+  Subscription,
+  combineLatest,
+  of,
+} from "rxjs";
+import {
+  concatMap,
+  filter,
+  map,
+  mergeMap,
+  switchMap,
+  tap,
+} from "rxjs/operators";
+import { TicketService } from "src/app/Services/ticket.service";
 import { UserService } from "src/app/Services/user.service";
 import { BackendService } from "src/app/backend.service";
+import { Ticket } from "src/interfaces/ticket.interface";
 import { User } from "src/interfaces/user.interface";
 
 @Component({
@@ -14,8 +31,11 @@ import { User } from "src/interfaces/user.interface";
 export class DetailTicketComponent implements OnInit, OnDestroy {
   public dataDetailTicket$: Observable<any> = new Observable<any>();
   public selectUserForAssign: number = null;
+  private _selectUserForAssign$: Subject<number> = new BehaviorSubject<number>(
+    null
+  );
   public listUser$: Observable<User> = of();
-  private _id: number = +this.route.snapshot.params["id"];
+  private _id$: Observable<number> = of(+this.route.snapshot.params["id"]);
   public spinnerShow: boolean = false;
   public souscription: Subscription = new Subscription();
 
@@ -23,11 +43,20 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
     private readonly backendService: BackendService,
     public route: ActivatedRoute,
     private router: Router,
-    public userService: UserService
+    public userService: UserService,
+    private ticketService: TicketService
   ) {}
 
   ngOnInit(): void {
     this.onInitDetail();
+  }
+
+  get selectUserForAssignObs(): Observable<number> {
+    return this._selectUserForAssign$.asObservable();
+  }
+
+  setSelectUserForAssign(arg: number) {
+    this._selectUserForAssign$.next(arg);
   }
 
   onInitDetail() {
@@ -38,28 +67,76 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
 
   onSelectUserForAssign() {
     if (this.selectUserForAssign) {
-      if (confirm("voulez-vous assigner ce ticket à cette personne?")) {
-        this.souscription.add(
-          this.backendService
-            .assign(this._id, this.selectUserForAssign)
-            .pipe(tap(() => this.onInitDetail()))
-            .subscribe()
-        );
+      this.setSelectUserForAssign(this.selectUserForAssign);
+      if (confirm("Voulez-vous assigner ce ticket à cette personne?")) {
+        combineLatest([
+          this.ticketService.listTicket,
+          this.userService.listUser,
+          of(this.selectUserForAssign),
+          this._id$,
+        ])
+          .pipe(
+            map(([tickets, users, selectUserForAssign, id]) => {
+              return tickets
+                .filter((ticket: Ticket) => ticket.id == id)
+                .map((ticket: Ticket) => {
+                  return {
+                    ...ticket,
+                    assigneeName: !isNaN(ticket.assigneeId)
+                      ? users
+                          .filter(
+                            (user: User) => +user.id == +selectUserForAssign
+                          )
+                          .shift().name
+                      : "Non assigné",
+                    assigneeId: selectUserForAssign,
+                  };
+                });
+            }),
+            tap(([tickets]) => {
+              this.backendService.assign(+tickets.id, +tickets.assigneeId);
+            })
+          )
+          .subscribe((detailOnTicketAssign) => {
+            this.dataDetailTicket$ = of(detailOnTicketAssign.shift());
+          });
       }
     }
   }
 
   onComplete() {
-    this.spinnerShow = true;
-    this.souscription.add(
-      this.backendService
-        .complete(this._id, true)
+    if (confirm("Voulez-vous fermé (Complete) ce ticket?")) {
+      combineLatest([
+        this.ticketService.listTicket,
+        this.userService.listUser,
+        this.selectUserForAssignObs,
+        this._id$,
+      ])
         .pipe(
-          tap(() => this.onInitDetail()),
-          tap(() => (this.spinnerShow = false))
+          map(([tickets, users, selectUserAssign, id]) => {
+            return tickets
+              .filter((ticket: Ticket) => ticket.id == id)
+              .map((ticket: Ticket) => {
+                return {
+                  ...ticket,
+                  assigneeId: +selectUserAssign,
+                  assigneeName: !isNaN(ticket.assigneeId)
+                    ? users
+                        .filter((user: User) => +user.id == +selectUserAssign)
+                        .shift().name
+                    : "Non assigné",
+                  completed: true,
+                };
+              });
+          }),
+          tap(([ticket]) => {
+            this.backendService.complete(+ticket.id, true);
+          })
         )
-        .subscribe()
-    );
+        .subscribe((detailOnTicketComplet) => {
+          this.dataDetailTicket$ = of(detailOnTicketComplet.shift());
+        });
+    }
   }
 
   onPrecede() {
