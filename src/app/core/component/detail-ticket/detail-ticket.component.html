@@ -52,7 +52,7 @@
           <button
             class="btn btn-success"
             type="button"
-            [disabled]="!dataDetail.assigneeId"
+            [disabled]="!dataDetail.assigneeId || dataDetail.completed"
             (click)="onComplete()">
             compléter
           </button>

@@ -15,8 +15,8 @@ export class AppComponent implements OnInit {
     private ticketService: TicketService
   ) {}
 
-  async ngOnInit() {
-    await this.ticketService.emitListTicket();
-    await this.userService.emitListUser();
+  ngOnInit() {
+    this.ticketService.emitListTicket();
+    this.userService.emitListUser();
   }
 }

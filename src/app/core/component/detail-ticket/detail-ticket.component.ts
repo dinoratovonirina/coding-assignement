@@ -1,4 +1,3 @@
-import { isNull } from "@angular/compiler/src/output/output_ast";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -9,14 +8,7 @@ import {
   combineLatest,
   of,
 } from "rxjs";
-import {
-  concatMap,
-  filter,
-  map,
-  mergeMap,
-  switchMap,
-  tap,
-} from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { TicketService } from "src/app/Services/ticket.service";
 import { UserService } from "src/app/Services/user.service";
 import { BackendService } from "src/app/backend.service";
@@ -36,6 +28,7 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
   );
   public listUser$: Observable<User> = of();
   private _id$: Observable<number> = of(+this.route.snapshot.params["id"]);
+  private id: number = +this.route.snapshot.params["id"];
   public spinnerShow: boolean = false;
   public souscription: Subscription = new Subscription();
 
@@ -60,82 +53,113 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
   }
 
   onInitDetail() {
-    this.route.data.subscribe((detailOnTicket) => {
-      this.dataDetailTicket$ = of(detailOnTicket.detailTicket);
-    });
+    this.route.data.subscribe(
+      (detailOnTicket) => {
+        this.dataDetailTicket$ = of(detailOnTicket.detailTicket);
+      },
+      (error) =>
+        alert(`Erreur ${error} de recupération du ticket n°: ${this.id}`)
+    );
   }
 
   onSelectUserForAssign() {
     if (this.selectUserForAssign) {
       this.setSelectUserForAssign(this.selectUserForAssign);
       if (confirm("Voulez-vous assigner ce ticket à cette personne?")) {
-        combineLatest([
-          this.ticketService.listTicket,
-          this.userService.listUser,
-          of(this.selectUserForAssign),
-          this._id$,
-        ])
-          .pipe(
-            map(([tickets, users, selectUserForAssign, id]) => {
-              return tickets
-                .filter((ticket: Ticket) => ticket.id == id)
-                .map((ticket: Ticket) => {
-                  return {
-                    ...ticket,
-                    assigneeName: !isNaN(ticket.assigneeId)
-                      ? users
-                          .filter(
-                            (user: User) => +user.id == +selectUserForAssign
-                          )
-                          .shift().name
-                      : "Non assigné",
-                    assigneeId: selectUserForAssign,
-                  };
-                });
-            }),
-            tap(([tickets]) => {
-              this.backendService.assign(+tickets.id, +tickets.assigneeId);
-            })
-          )
-          .subscribe((detailOnTicketAssign) => {
-            this.dataDetailTicket$ = of(detailOnTicketAssign.shift());
-          });
+        this.souscription.add(
+          combineLatest([
+            this.ticketService.listTicket,
+            this.userService.listUser,
+            of(this.selectUserForAssign),
+            this._id$,
+          ])
+            .pipe(
+              map(([tickets, users, selectUserForAssign, id]) => {
+                return tickets
+                  .filter((ticket: Ticket) => ticket.id == id)
+                  .map((ticket: Ticket) => {
+                    return {
+                      ...ticket,
+                      assigneeId: selectUserForAssign,
+                      assigneeName: !isNaN(ticket.assigneeId)
+                        ? users
+                            .filter(
+                              (user: User) => +user.id == +selectUserForAssign
+                            )
+                            .shift().name
+                        : null,
+                    };
+                  });
+              }),
+              tap(([tickets]) => {
+                this.backendService
+                  .assign(+tickets.id, this.selectUserForAssign)
+                  .subscribe((data) => {
+                    this.ticketService.replaceTicketById(data.id, data);
+                  });
+              })
+            )
+            .subscribe(
+              (detailOnTicketAssign) => {
+                this.dataDetailTicket$ = of(detailOnTicketAssign.shift());
+              },
+              (error) =>
+                alert(
+                  `Erreur ${error} de recupération du ticket n°: ${this.id}`
+                )
+            )
+        );
       }
     }
   }
 
   onComplete() {
     if (confirm("Voulez-vous fermé (Complete) ce ticket?")) {
-      combineLatest([
-        this.ticketService.listTicket,
-        this.userService.listUser,
-        this.selectUserForAssignObs,
-        this._id$,
-      ])
-        .pipe(
-          map(([tickets, users, selectUserAssign, id]) => {
-            return tickets
-              .filter((ticket: Ticket) => ticket.id == id)
-              .map((ticket: Ticket) => {
-                return {
-                  ...ticket,
-                  assigneeId: +selectUserAssign,
-                  assigneeName: !isNaN(ticket.assigneeId)
-                    ? users
-                        .filter((user: User) => +user.id == +selectUserAssign)
-                        .shift().name
-                    : "Non assigné",
-                  completed: true,
-                };
-              });
-          }),
-          tap(([ticket]) => {
-            this.backendService.complete(+ticket.id, true);
-          })
-        )
-        .subscribe((detailOnTicketComplet) => {
-          this.dataDetailTicket$ = of(detailOnTicketComplet.shift());
-        });
+      this.souscription.add(
+        combineLatest([
+          this.ticketService.listTicket,
+          this.userService.listUser,
+          this.selectUserForAssignObs,
+          this._id$,
+        ])
+          .pipe(
+            map(([tickets, users, selectUserAssign, id]) => {
+              return tickets
+                .filter((ticket: Ticket) => ticket.id == id)
+                .map((ticket: Ticket) => {
+                  let assigneeIdTicket =
+                    selectUserAssign == null
+                      ? ticket.assigneeId
+                      : selectUserAssign;
+
+                  return {
+                    ...ticket,
+                    assigneeId: +assigneeIdTicket,
+                    assigneeName: !isNaN(ticket.assigneeId)
+                      ? users
+                          .filter((user: User) => +user.id == +assigneeIdTicket)
+                          .shift().name
+                      : null,
+                    completed: true,
+                  };
+                });
+            }),
+            tap(([ticket]) => {
+              this.backendService
+                .complete(+ticket.id, true)
+                .subscribe((data) => {
+                  this.ticketService.replaceTicketById(data.id, data);
+                });
+            })
+          )
+          .subscribe(
+            (detailOnTicketComplet) => {
+              this.dataDetailTicket$ = of(detailOnTicketComplet.shift());
+            },
+            (error) =>
+              alert(`Erreur ${error} de recupération du ticket n°: ${this.id}`)
+          )
+      );
     }
   }
 

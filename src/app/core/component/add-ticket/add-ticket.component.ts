@@ -52,13 +52,18 @@ export class AddTicketComponent implements OnInit, OnDestroy {
         ),
         take(1),
         tap(() =>
-          this.backendService.newTicket({ description: this.description })
+          this.backendService
+            .newTicket({ description: this.description })
+            .subscribe()
         )
       )
-      .subscribe((listeTicket) => {
-        this.ticketService.setListTicket(listeTicket);
-        this.spinnerShow = false;
-      });
+      .subscribe(
+        (listeTicket) => {
+          this.ticketService.setListTicket(listeTicket);
+          this.spinnerShow = false;
+        },
+        (error) => alert(`Erreur lors de l'ajout : ${error}`)
+      );
   }
 
   onResetForm() {

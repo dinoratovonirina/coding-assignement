@@ -23,8 +23,8 @@ export class UserService {
     return this._listUser$.value;
   }
 
-  emitListUser() {
-    this.backendService
+  async emitListUser() {
+    await this.backendService
       .users()
       .subscribe((listUser) => this.setListUser(listUser));
   }

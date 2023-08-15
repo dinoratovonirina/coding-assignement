@@ -12,8 +12,6 @@ export class TicketService {
     Ticket[]
   >([]);
 
-  private _ticket$: BehaviorSubject<Ticket> = new BehaviorSubject<Ticket>(null);
-
   constructor(private readonly backendService: BackendService) {}
 
   get listTicket(): Observable<Ticket[]> {
@@ -32,20 +30,18 @@ export class TicketService {
     return this._listTicket$.value;
   }
 
-  get ticket() {
-    return this._ticket$.asObservable();
+  indexTicketById(id: number): number {
+    return this.getValueListTicket().findIndex(
+      (ticket: Ticket) => ticket.id == id
+    );
   }
 
-  setTicket(arg: Ticket | any) {
-    this._ticket$.next(arg);
+  replaceTicketById(id, data: Ticket) {
+    this.getValueListTicket()[+this.indexTicketById(id)] = data;
   }
 
-  getValueTicket(): Ticket {
-    return this._ticket$.value;
-  }
-
-  emitListTicket() {
-    this.backendService
+  async emitListTicket() {
+    await this.backendService
       .tickets()
       .pipe(tap((listTicket: Ticket[]) => this.setListTicket(listTicket)))
       .subscribe();
