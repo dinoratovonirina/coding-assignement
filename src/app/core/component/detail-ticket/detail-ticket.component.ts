@@ -185,6 +185,6 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.souscription.unsubscribe();
+    //this.souscription.unsubscribe();
   }
 }
