@@ -12,10 +12,18 @@ describe("TicketService", () => {
       providers: [BackendService],
     });
     service = TestBed.inject(TicketService);
-    backservice = TestBed.inject(BackendService);
   });
 
   it("should be created", () => {
     expect(service).toBeTruthy();
   });
+
+  it("get listTicket() should array object", () => {
+    expect(typeof service.listTicket).toEqual("object");
+  });
+
+  /* it("indexTicketById() get index for ticket", () => {
+    let listTickets = service.getValueListTicket();
+    console.log(listTickets);
+  });*/
 });

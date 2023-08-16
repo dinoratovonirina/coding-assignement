@@ -36,7 +36,7 @@ export class TicketService {
     );
   }
 
-  replaceTicketById(id, data: Ticket) {
+  replaceTicketById(id: number, data: Ticket) {
     this.getValueListTicket()[+this.indexTicketById(id)] = data;
   }
 
