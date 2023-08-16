@@ -26,9 +26,7 @@
           (change)="onSelectUserForAssign()"
           [(ngModel)]="selectUserForAssign">
           <option selected [value]=""></option>
-          <option
-            *ngFor="let user of userService.listUser | async"
-            [value]="user.id">
+          <option *ngFor="let user of getAllUser() | async" [value]="user.id">
             {{ user.name }}
           </option>
         </select>

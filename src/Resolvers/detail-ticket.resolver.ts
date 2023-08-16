@@ -35,6 +35,7 @@ export class DetailTicketResolver implements Resolve<any> {
       id$,
     ])
       .pipe(
+        tap(console.log),
         map(([tickets, users, id]) => {
           return tickets
             .filter((ticket: Ticket) => ticket.id == id)

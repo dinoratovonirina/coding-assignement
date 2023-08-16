@@ -44,6 +44,10 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
     this.onInitDetail();
   }
 
+  getAllUser(): Observable<User[]> {
+    return this.userService.listUser;
+  }
+
   get selectUserForAssignObs(): Observable<number> {
     return this._selectUserForAssign$.asObservable();
   }
@@ -66,6 +70,8 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
     if (this.selectUserForAssign) {
       this.setSelectUserForAssign(this.selectUserForAssign);
       if (confirm("Voulez-vous assigner ce ticket à cette personne?")) {
+        this.spinnerShow = true;
+
         this.souscription.add(
           combineLatest([
             this.ticketService.listTicket,
@@ -92,11 +98,17 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
                   });
               }),
               tap(([tickets]) => {
-                this.backendService
-                  .assign(+tickets.id, this.selectUserForAssign)
-                  .subscribe((data) => {
-                    this.ticketService.replaceTicketById(data.id, data);
-                  });
+                this.souscription.add(
+                  this.backendService
+                    .assign(+tickets.id, this.selectUserForAssign)
+                    .subscribe(
+                      (data) => {
+                        this.ticketService.replaceTicketById(data.id, data);
+                        this.spinnerShow = false;
+                      },
+                      (error) => alert(`Erreur ${error}`)
+                    )
+                );
               })
             )
             .subscribe(
@@ -115,6 +127,7 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
 
   onComplete() {
     if (confirm("Voulez-vous fermé (Complete) ce ticket?")) {
+      this.spinnerShow = true;
       this.souscription.add(
         combineLatest([
           this.ticketService.listTicket,
@@ -145,11 +158,15 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
                 });
             }),
             tap(([ticket]) => {
-              this.backendService
-                .complete(+ticket.id, true)
-                .subscribe((data) => {
-                  this.ticketService.replaceTicketById(data.id, data);
-                });
+              this.souscription.add(
+                this.backendService.complete(+ticket.id, true).subscribe(
+                  (data) => {
+                    this.ticketService.replaceTicketById(data.id, data);
+                    this.spinnerShow = false;
+                  },
+                  (error) => alert(`Erreur ${error}`)
+                )
+              );
             })
           )
           .subscribe(

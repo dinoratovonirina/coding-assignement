@@ -3,7 +3,7 @@
 <app-filter-ticket (textForFilter)="onFilterTicket($event)"></app-filter-ticket>
 
 <div
-  *ngIf="ticketService.listTicket === null"
+  *ngIf="ticketService.getValueListTicket().length == 0"
   class="spinner-border text-dark"
   role="status">
   <span class="visually-hidden">Loading...</span>
