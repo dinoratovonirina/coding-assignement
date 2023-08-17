@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { AppComponent } from "./app.component";
 import { TicketService } from "./Services/ticket.service";
 import { BackendService } from "./backend.service";
+import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/compiler";
 
 describe("AppComponent", () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -11,6 +12,7 @@ describe("AppComponent", () => {
     TestBed.configureTestingModule({
       declarations: [AppComponent],
       providers: [TicketService, BackendService],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     });
 
     fixture = TestBed.createComponent(AppComponent);

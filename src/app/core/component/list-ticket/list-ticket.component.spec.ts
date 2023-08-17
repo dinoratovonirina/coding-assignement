@@ -26,4 +26,10 @@ describe("ListTicketComponent", () => {
   it("should create", () => {
     expect(component).toBeTruthy();
   });
+
+  it("Init liste Ticket", () => {
+    let emitTicket = spyOn(component, "emitFilterTicket");
+    component.emitFilterTicket();
+    expect(emitTicket).toHaveBeenCalled();
+  });
 });
