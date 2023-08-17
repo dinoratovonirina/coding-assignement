@@ -5,7 +5,6 @@ import { BackendService } from "../backend.service";
 
 describe("TicketService", () => {
   let service: TicketService;
-  let backservice: BackendService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -18,12 +17,19 @@ describe("TicketService", () => {
     expect(service).toBeTruthy();
   });
 
-  it("get listTicket() should array object", () => {
+  it("get listTicket() should type array object", () => {
     expect(typeof service.listTicket).toEqual("object");
   });
 
-  /* it("indexTicketById() get index for ticket", () => {
-    let listTickets = service.getValueListTicket();
-    console.log(listTickets);
-  });*/
+  it("return getValueListTicket()", () => {
+    let listTicket = spyOn(service, "getValueListTicket").and.returnValue(true);
+    service.getValueListTicket();
+    expect(listTicket).toHaveBeenCalled();
+  });
+
+  it("get index of list ticket", () => {
+    spyOn(service, "indexTicketById").and.returnValue(0);
+    let indexTicket = service.indexTicketById(0);
+    expect(indexTicket).toBe(0);
+  });
 });
