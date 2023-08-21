@@ -29,19 +29,6 @@ describe("ListTicketComponent", () => {
     expect(instanceFilter).toBeTruthy();
   });
 
-  xit("shoudl check @Output", () => {
-    let checkOutput = fixture.debugElement.query(By.css("app-filter-ticket "));
-    checkOutput.triggerEventHandler("textForFilter", 0);
-    expect(component.onFilterTicket).toBe([
-      {
-        id: 0,
-        completed: false,
-        assigneeId: 111,
-        description: "Install a monitor arm",
-      },
-    ]);
-  });
-
   beforeEach(() => {
     fixture = TestBed.createComponent(ListTicketComponent);
     component = fixture.componentInstance;

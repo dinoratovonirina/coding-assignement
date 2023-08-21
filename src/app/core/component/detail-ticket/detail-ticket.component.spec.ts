@@ -25,4 +25,10 @@ describe("DetailTicketComponent", () => {
   it("should create", () => {
     expect(component).toBeTruthy();
   });
+
+  it("should Init value detail Ticket", () => {
+    let initValue = spyOn(component, "ngOnInit");
+    component.ngOnInit();
+    expect(initValue).toHaveBeenCalled();
+  });
 });

@@ -20,6 +20,12 @@ describe("FilterTicketComponent", () => {
     fixture.detectChanges();
   });
 
+  it("should check if onFilterListTicket() is called", () => {
+    let onFilterListTicket = spyOn(component, "onFilterListTicket");
+    component.onFilterListTicket();
+    expect(onFilterListTicket).toHaveBeenCalled();
+  });
+
   it("should create", () => {
     expect(component).toBeTruthy();
   });
