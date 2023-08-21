@@ -26,6 +26,13 @@ describe("DetailTicketComponent", () => {
     expect(component).toBeTruthy();
   });
 
+  it("should return list users getAllUser()", () => {
+    let listUser = spyOn(component, "getAllUser");
+    component.getAllUser();
+    expect(listUser).toHaveBeenCalled();
+    expect(listUser).toHaveBeenCalledTimes(1);
+  });
+
   it("should Init value detail Ticket", () => {
     let initValue = spyOn(component, "ngOnInit");
     component.ngOnInit();

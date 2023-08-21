@@ -26,7 +26,7 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
   private _selectUserForAssign$: Subject<number> = new BehaviorSubject<number>(
     null
   );
-  public listUser$: Observable<User> = of();
+  public listUser$: Observable<User[]> = of<User[]>([]);
   private _id$: Observable<number> = of(+this.route.snapshot.params["id"]);
   private id: number = +this.route.snapshot.params["id"];
   public spinnerShow: boolean = false;
@@ -42,10 +42,12 @@ export class DetailTicketComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.onInitDetail();
+    this.getAllUser();
   }
 
   getAllUser(): Observable<User[]> {
-    return this.userService.listUser;
+    this.listUser$ = this.userService.listUser;
+    return this.listUser$;
   }
 
   get selectUserForAssignObs(): Observable<number> {
