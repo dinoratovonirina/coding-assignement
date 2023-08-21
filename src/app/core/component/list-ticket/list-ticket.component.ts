@@ -45,7 +45,7 @@ export class ListTicketComponent implements OnInit {
       ).subscribe();
   }
 
-  listFilterTicketObservable(
+  private listFilterTicketObservable(
     listTicket$: Observable<Ticket[]>,
     filterValue$: Observable<number>
   ) {
