@@ -60,6 +60,7 @@ export class AddTicketComponent implements OnInit, OnDestroy {
       .subscribe(
         (listeTicket) => {
           this.ticketService.setListTicket(listeTicket);
+          this.onResetForm();
           this.spinnerShow = false;
         },
         (error) => alert(`Erreur lors de l'ajout : ${error}`)

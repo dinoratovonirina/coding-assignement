@@ -3,7 +3,6 @@ import { RouterTestingModule } from "@angular/router/testing";
 
 import { DetailTicketComponent } from "./detail-ticket.component";
 import { BackendService } from "src/app/backend.service";
-import { ActivatedRoute, RouterModule } from "@angular/router";
 
 describe("DetailTicketComponent", () => {
   let component: DetailTicketComponent;

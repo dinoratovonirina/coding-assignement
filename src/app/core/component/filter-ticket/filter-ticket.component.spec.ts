@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { FilterTicketComponent } from "./filter-ticket.component";
+import { FormsModule } from "@angular/forms";
 
 describe("FilterTicketComponent", () => {
   let component: FilterTicketComponent;
@@ -9,6 +10,7 @@ describe("FilterTicketComponent", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [FilterTicketComponent],
+      imports: [FormsModule],
     }).compileComponents();
   });
 
