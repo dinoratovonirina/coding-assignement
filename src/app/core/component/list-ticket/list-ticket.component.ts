@@ -12,9 +12,11 @@ import { Ticket } from "src/interfaces/ticket.interface";
   styleUrls: ["./list-ticket.component.css"],
 })
 export class ListTicketComponent implements OnInit {
-  public _listFilterTicket$: BehaviorSubject<Ticket[]> = new BehaviorSubject<
+  private _listFilterTicket$: BehaviorSubject<Ticket[]> = new BehaviorSubject<
     Ticket[]
   >([]);
+
+  public nbreOfFilter: number = null;
 
   constructor(public ticketService: TicketService, private router: Router) {}
 
@@ -37,11 +39,12 @@ export class ListTicketComponent implements OnInit {
   }
 
   onFilterTicket(arg: number) {
-    if (arg === null) return this.emitFilterTicket();
+    this.nbreOfFilter = arg;
+    if (this.nbreOfFilter === null) return this.emitFilterTicket();
     else
       this.listFilterTicketObservable(
         this.ticketService.listTicket,
-        of(arg)
+        of(this.nbreOfFilter)
       ).subscribe();
   }
 

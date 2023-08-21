@@ -6,7 +6,8 @@ import { TicketService } from "src/app/Services/ticket.service";
 import { BackendService } from "src/app/backend.service";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
 import { By } from "@angular/platform-browser";
-import { of } from "rxjs";
+import { Observable, of } from "rxjs";
+import { Ticket } from "src/interfaces/ticket.interface";
 
 describe("ListTicketComponent", () => {
   let component: ListTicketComponent;
@@ -43,18 +44,14 @@ describe("ListTicketComponent", () => {
     expect(instanceFilter).toBeTruthy();
   });
 
-  /*it("should test @Output()", () => {
+  it("should test @Output() at filter", () => {
     let instanceFilter = fixture.debugElement.query(
       By.css("app-filter-ticket")
     );
     instanceFilter.triggerEventHandler("textForFilter", 0);
-    let filter = component.onFilterTicket(0);
-    let listAfterFitler = component.listFilterTicketObservable(
-      ticketService.listTicket,
-      of(0)
-    );
-    expect(filter).toBe(listAfterFitler);
-  });*/
+    component.onFilterTicket(0);
+    expect(component.nbreOfFilter).toBe(0);
+  });
 
   it("Init liste Ticket", () => {
     let emitTicket = spyOn(component, "emitFilterTicket");
