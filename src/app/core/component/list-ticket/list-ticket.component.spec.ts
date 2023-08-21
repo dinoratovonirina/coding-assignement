@@ -6,8 +6,6 @@ import { TicketService } from "src/app/Services/ticket.service";
 import { BackendService } from "src/app/backend.service";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
 import { By } from "@angular/platform-browser";
-import { Observable, of } from "rxjs";
-import { Ticket } from "src/interfaces/ticket.interface";
 
 describe("ListTicketComponent", () => {
   let component: ListTicketComponent;
